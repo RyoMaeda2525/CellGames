@@ -11,9 +11,6 @@ public class GameManager : MonoBehaviour
     Minesweeper _minesweeper = default;
 
     [SerializeField]
-    MineHideController _mineHideController = default;
-
-    [SerializeField]
     Text _timeText = default;
 
     [SerializeField]

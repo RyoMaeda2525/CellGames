@@ -25,8 +25,6 @@ public class MapTile : MonoBehaviour
     [SerializeField]
     private Image _image = default;
 
-    int _value = 0;
-
     public int distance; //ゴールまでの推定コスト
 
     public int count; //進んで来た実コスト

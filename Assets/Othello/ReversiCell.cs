@@ -65,35 +65,22 @@ public class ReversiCell : MonoBehaviour
     private void Start()
     {
         _cellAni = transform.Find("Cell").GetComponent<Animator>();
-        //_reversiAni = transform.Find("Reversi").GetComponent<Animator>();
     }
 
 
     public void CellChack(int Original_x, int Original_z, int me_x, int me_z, ReversiState reversi)
     {
-        if (_reversiState == ReversiState.None || _reversiState == reversi)
-        {
-            //int z = me_z - Original_z;
-            //int x = me_x - Original_x;
+        if(_reversiState == ReversiState.None) { return; }
 
-            //if (z > 1 || z < -1 && x > 1 || x < -1)
-            //{
-                Reversi.Instance.ReversalBool(me_x, me_z, (int)_reversiState);
-            //}
+        if (_reversiState == reversi)
+        {
+            Reversi.Instance.ReversalBool(Original_x, Original_z, me_x, me_z , (int)_reversiState);
         }
         else if (_reversiState != reversi)
         {
             Reversi.Instance.NextCheck(Original_x, Original_z, me_x, me_z, reversi);
         }
     }
-
-    //public void Reversal(int Original_x, int Original_z, int me_z, int me_x, ReversiState reversi)
-    //{
-    //    if (_reversiState == reversi)
-    //    {
-    //        Reversi.Instance.ReversalNext(Original_x, Original_z, me_x, me_z, reversi);
-    //    }
-    //}
 
     public void CellReset() { _reversiCellState = ReversiCellState.None; OnCellState(); }
 }
