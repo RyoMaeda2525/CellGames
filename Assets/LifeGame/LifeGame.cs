@@ -51,10 +51,8 @@ public class LifeGame : MonoBehaviour , IPointerClickHandler
     /// </summary>
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject.name == "LifeCell(Clone)") 
+        if (eventData.pointerCurrentRaycast.gameObject.TryGetComponent<LifeCell>(out var lifecell)) 
         {
-           LifeCell lifecell = eventData.pointerCurrentRaycast.gameObject.GetComponent<LifeCell>();
-            
             if (lifecell.LifeState == LifeState.alive) lifecell.LifeState = LifeState.dead;
             else lifecell.LifeState = LifeState.alive;
         }

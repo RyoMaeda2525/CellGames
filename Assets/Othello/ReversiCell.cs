@@ -44,6 +44,8 @@ public class ReversiCell : MonoBehaviour
 
     public void OnCellState()
     {
+        if (_cellAni == null) { _cellAni = transform.Find("Cell").GetComponent<Animator>(); }
+
         _cellAni.Play(_reversiCellState.ToString());
     }
 
@@ -53,34 +55,37 @@ public class ReversiCell : MonoBehaviour
     public void OnReversiState()
     {
         if (_reversiAni == null) { _reversiAni = transform.Find("Reversi").GetComponent<Animator>(); }
-        _reversiAni.Play(_reversiState.ToString());
+
+        if (_reversiState == ReversiState.None) { _reversiAni.Play("None"); return; }
+
+        _reversiAni.SetBool(_reversiState.ToString() , true);
+        if (_reversiState.ToString() == "White")
+        {
+            _reversiAni.SetBool("Black", false);
+        }
+        else { _reversiAni.SetBool("White", false); }
     }
 
     //---------Ç±Ç±Ç©ÇÁstateà»äOÇÃèàóù------------------------------------------------------
 
-    Animator _cellAni = default;
+    Animator _cellAni = null;
 
     Animator _reversiAni = null;
 
-    private void Start()
-    {
-        _cellAni = transform.Find("Cell").GetComponent<Animator>();
-    }
-
-
-    public void CellChack(int Original_x, int Original_z, int me_x, int me_z, ReversiState reversi)
+    public void CellChack(int original_x, int original_z, int me_x, int me_z, ReversiState reversi)
     {
         if(_reversiState == ReversiState.None) { return; }
 
         if (_reversiState == reversi)
         {
-            Reversi.Instance.ReversalBool(Original_x, Original_z, me_x, me_z , (int)_reversiState);
+            Reversi.Instance.ReversalBool(original_x, original_z, me_x, me_z);
         }
         else if (_reversiState != reversi)
         {
-            Reversi.Instance.NextCheck(Original_x, Original_z, me_x, me_z, reversi);
+            Reversi.Instance.NextCheck(original_x, original_z, me_x, me_z, reversi);
         }
     }
 
     public void CellReset() { _reversiCellState = ReversiCellState.None; OnCellState(); }
+
 }
