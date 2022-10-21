@@ -3,48 +3,77 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SocialPlatforms.Impl;
 
-public class Background : MonoBehaviour
+public class BackGround : MonoBehaviour
 {
     [SerializeField, Tooltip("”wŒi‚Ì‘O‚É’u‚¢‚ÄƒtƒF[ƒh“™‚ð‚·‚é’PF”wŒi")]
     private Image _monochromatic;
 
-    [SerializeField, Tooltip("Ø‚è‘Ö‚¦‚é‘O‚Ì”wŒi")]
-    private Image _swapBackGround;
+    [SerializeField, Tooltip("”wŒi1")]
+    private Image _BackGround1;
+
+    [SerializeField, Tooltip("”wŒi2")]
+    private Image _BackGround2;
 
     [SerializeField, Tooltip("ƒtƒF[ƒh‚·‚éŽžŠÔ")]
     private float _fadeInterbal = 1.5f;
 
     private Tweener _tweener;
 
+    private bool _backGroundChange = false;
+
+    public bool BackGroundChange
+    {
+        get
+        {
+            return _backGroundChange;
+        }
+    }
+
     private void Start()
     {
-        BackGrountChange();
+        MonochromaticFadeOut();
     }
 
-    private void FadeIn() 
+    private void FadeIn(Image backGround)
     {
-        var c = _monochromatic.color;
+        _backGroundChange = true;
+
+        var c = backGround.color;
+        c = new Color(c.r, c.g, c.b, 255);
+
+        DOTween.To(() => backGround.color,
+            x => backGround.color = x,
+            c, _fadeInterbal).OnComplete(() => _backGroundChange = false);
+    }
+
+    private void FadeOut(Image backGround)
+    {
+        _backGroundChange = true;
+
+        var c = backGround.color;
         c = new Color(c.r, c.g, c.b, 0);
 
-        DOTween.To(() => _monochromatic.color,
-            x => _monochromatic.color = x,
-            c,
-            _fadeInterbal); 
+        DOTween.To(() => backGround.color,
+            x => backGround.color = x,
+            c, _fadeInterbal).OnComplete(() => _backGroundChange = false);
     }
 
-    private void FadeOut() 
+    private void MonochromaticFadeOut()
     {
-    
+        if (!_backGroundChange)
+        {
+            FadeOut(_monochromatic);
+        }
     }
 
-    private void BackGrountChange() 
+    private void CrossFade()
     {
-        var c = _swapBackGround.color;
-        c = new Color(c.r, c.g, c.b, 0);
-
-        DOTween.To(() => _swapBackGround.color,
-            x => _swapBackGround.color = x,
-            c,_fadeInterbal);
+        if (!_backGroundChange)
+        {
+            FadeOut(_BackGround1);
+            FadeIn(_BackGround2);
+        }
     }
 }
