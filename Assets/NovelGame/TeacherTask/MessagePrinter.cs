@@ -2,6 +2,7 @@ using TMPro;
 using UnityEditor.VersionControl;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class MessagePrinter : MonoBehaviour
 {
@@ -50,22 +51,23 @@ public class MessagePrinter : MonoBehaviour
             }
         }
 
-        if (_alphaArray[_currentIndex] != 99) 
+        if (_alphaArray[_currentIndex] != 255) 
         {
             _textUi.text = "";
             for (int i = 0; i < _currentIndex + 1; i++)
             {
-                if (_alphaArray[i] < 90)
+                if (_alphaArray[i] < 250)
                 {
                     if (_alphaArray[_currentIndex] < 10) { _alphaArray[_currentIndex] = 10; }
 
-                    _alphaArray[i] += 1;
-                    _textUi.text += $"<alpha=#{_alphaArray[i]}>" + _message[_currentIndex];
+                    _alphaArray[i] += 5;
+                    _textUi.text += $"<alpha=#" +_alphaArray[i].ToString("x2")+">"+_message[_currentIndex];
+
                 }
                 else
                 {
-                    _alphaArray[i] = 99;
-                    _textUi.text += $"<alpha=#{_alphaArray[i]}>" + _message[_currentIndex];
+                    _alphaArray[i] = 255;
+                    _textUi.text += $"<alpha=#ff>"+_message[_currentIndex];
                 }
             }
         }
@@ -93,7 +95,7 @@ public class MessagePrinter : MonoBehaviour
         _currentIndex = _message.Length - 1;
         for (int i = 0; i < _alphaArray.Length; i++)
         {
-            _alphaArray[i] = 89;
+            _alphaArray[i] = 254;
         }
     }
 }
