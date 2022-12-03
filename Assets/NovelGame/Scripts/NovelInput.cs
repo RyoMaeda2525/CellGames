@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class NovelInput : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class NovelInput : MonoBehaviour
     /// <summary>åªç›ì«Ç›çûÇÒÇ≈Ç¢ÇÈçs</summary>
     private int _currentLine = 0;
 
-    private Regex regex = new Regex("@(\\S+)\\s");
+    string[] commandWord = new string[] { "\\" };
 
     // Start is called before the first frame update
     void Awake()
@@ -79,21 +80,28 @@ public class NovelInput : MonoBehaviour
                 _scenarios[_currentLine] = _scenarios[_currentLine].Substring(0, indexof);
             }
 
-            String[] commandText;
+            Match match = Regex.Match(_scenarios[_currentLine], string.Format("({0})", string.Join("|", commandWord)));
 
-            commandText = _scenarios[_currentLine].Split(new string[] { "@" }, StringSplitOptions.None);
+            int indexofCommand = _scenarios[_currentLine].IndexOf(match.Groups[0].Value);
 
-            Command(commandText);
+            if (indexofCommand != -1)
+            {
+                _scenarios[_currentLine] = _scenarios[_currentLine].Substring(0, indexofCommand);
+            }
 
-            _printer?.ShowMessage(commandText[commandText.Length - 1]);
+            Command(match);
+
+            _printer?.ShowMessage(_scenarios[_currentLine]);
         }
     }
 
-    private void Command(string[] commandText) 
+    private void Command(Match match) 
     {
-        for(int i = 0; i < commandText.Length - 1; i++) 
+        Group g = match.Groups[0];
+
+        switch (g) 
         {
-            Debug.Log(commandText[i]);
+            
         }
     }
 }
