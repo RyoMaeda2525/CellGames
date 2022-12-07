@@ -22,7 +22,7 @@ public class NovelInput : MonoBehaviour
     /// <summary>åªç›ì«Ç›çûÇÒÇ≈Ç¢ÇÈçs</summary>
     private int _currentLine = 0;
 
-    string[] commandWord = new string[] { "\\" };
+    string[] commandWord = new string[] { "\\image" , "\\backGround"  };
 
     // Start is called before the first frame update
     void Awake()
@@ -99,9 +99,13 @@ public class NovelInput : MonoBehaviour
     {
         Group g = match.Groups[0];
 
-        switch (g) 
+        switch (g.Value) 
         {
-            
+            case "\\image":
+                break;
+
+            case "\\backGround":
+                break;
         }
     }
 }
