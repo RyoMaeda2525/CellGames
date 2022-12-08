@@ -22,7 +22,7 @@ public class NovelInput : MonoBehaviour
     /// <summary>åªç›ì«Ç›çûÇÒÇ≈Ç¢ÇÈçs</summary>
     private int _currentLine = 0;
 
-    string[] commandWord = new string[] { "\\image" , "\\backGround"  };
+    string[] commandWord = new string[] { "\\$image", "\\$backGround" };
 
     // Start is called before the first frame update
     void Awake()
@@ -80,7 +80,7 @@ public class NovelInput : MonoBehaviour
                 _scenarios[_currentLine] = _scenarios[_currentLine].Substring(0, indexof);
             }
 
-            Match match = Regex.Match(_scenarios[_currentLine], string.Format("({0})", string.Join("|", commandWord)));
+            Match match = Regex.Match(_scenarios[_currentLine], string.Format("({0})(\\S+)", string.Join("|", commandWord)));
 
             int indexofCommand = _scenarios[_currentLine].IndexOf(match.Groups[0].Value);
 
@@ -97,14 +97,16 @@ public class NovelInput : MonoBehaviour
 
     private void Command(Match match) 
     {
-        Group g = match.Groups[0];
+        Group g = match.Groups[1];
 
         switch (g.Value) 
         {
-            case "\\image":
+            case "$image":
+                Debug.Log($"Image : {match.Groups[3].Value}");
                 break;
 
-            case "\\backGround":
+            case "$backGround":
+                Debug.Log($"backGround : {match.Groups[3].Value}");
                 break;
         }
     }
