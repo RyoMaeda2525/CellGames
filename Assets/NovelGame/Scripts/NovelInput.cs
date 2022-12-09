@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
-using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public class NovelInput : MonoBehaviour
 {
@@ -23,6 +19,8 @@ public class NovelInput : MonoBehaviour
     private int _currentLine = 0;
 
     string[] commandWord = new string[] { "\\$image", "\\$backGround" };
+
+    string[] processWord = new string[] { "\\$FadeInComplete", "\\$FadeOutComplete" , "\\$FadeIn", "\\$FadeOut" };
 
     // Start is called before the first frame update
     void Awake()
@@ -65,7 +63,7 @@ public class NovelInput : MonoBehaviour
     /// 次のページに進む。
     /// 次のページが存在しない場合は無視する。
     /// </summary>
-    private void MoveNext()
+    public void MoveNext()
     {
         if (_scenarios is null or { Length: 0 }) { return; }
 
@@ -75,39 +73,68 @@ public class NovelInput : MonoBehaviour
 
             int indexof = _scenarios[_currentLine].IndexOf("//");
 
-            if (indexof != -1) 
+            if (indexof != -1)
             {
                 _scenarios[_currentLine] = _scenarios[_currentLine].Substring(0, indexof);
             }
 
-            Match match = Regex.Match(_scenarios[_currentLine], string.Format("({0})(\\S+)", string.Join("|", commandWord)));
+            Match command = Regex.Match(_scenarios[_currentLine], string.Format("({0})({1})(\\S+)", string.Join("|", commandWord)
+                                                                                                    , string.Join("|", processWord)));
 
-            int indexofCommand = _scenarios[_currentLine].IndexOf(match.Groups[0].Value);
-
-            if (indexofCommand != -1)
+            if (command.Groups[0].Value != "")
             {
-                _scenarios[_currentLine] = _scenarios[_currentLine].Substring(0, indexofCommand);
+                Command(command);
             }
-
-            Command(match);
-
-            _printer?.ShowMessage(_scenarios[_currentLine]);
+            else
+            {
+                _printer?.ShowMessage(_scenarios[_currentLine]);
+            }
         }
     }
 
-    private void Command(Match match) 
+    private void Command(Match match)
     {
         Group g = match.Groups[1];
 
-        switch (g.Value) 
+        //背景の切り替え
+        if (g.Value == "$backGround")
         {
-            case "$image":
-                Debug.Log($"Image : {match.Groups[3].Value}");
-                break;
+            Group p = match.Groups[2];
 
-            case "$backGround":
-                Debug.Log($"backGround : {match.Groups[3].Value}");
-                break;
+            switch (p.Value)
+            {
+                case "$FadeIn":
+                    _bg.FadeIn(match.Groups[3].Value);
+                    Debug.Log($"backGroundFadeIn : {match.Groups[3].Value}");
+                    break;
+
+                case "$FadeOut":
+                    _bg.FadeOut(match.Groups[3].Value);
+                    Debug.Log($"backGroundFadeOut : {match.Groups[3].Value}");
+                    break;
+
+                case "$FadeInComplete":
+                    _bg.FadeInComplete(match.Groups[3].Value);
+                    Debug.Log($"backGroundFadeInComplete : {match.Groups[3].Value}");
+                    return;
+
+                case "$FadeOutComplete":
+                    _bg.FadeOutComplete(match.Groups[3].Value);
+                    Debug.Log($"backGroundFadeOutComplete : {match.Groups[3].Value}");
+                    return;
+            }
         }
+        //characterなどの切り替え
+        else if (g.Value == "$image")
+        {
+            switch (g.Value)
+            {
+                case "$image":
+                    Debug.Log($"Image : {match.Groups[3].Value}");
+                    break;
+            }
+        }
+
+        MoveNext(); //returnしなければ次の行へ
     }
 }

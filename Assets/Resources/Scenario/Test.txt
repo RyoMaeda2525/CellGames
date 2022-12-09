@@ -1,4 +1,5 @@
-@br BackGround : Black@ ああああああああ//うるせぇ@br
+@br$backGround$FadeOutCompleteBlack@br
+ああああああああ//うるせぇ@br
 いいいいいい@br
 うううううううう@br
 ええええええ
