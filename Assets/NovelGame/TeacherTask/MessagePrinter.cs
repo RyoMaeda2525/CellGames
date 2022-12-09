@@ -17,7 +17,7 @@ public class MessagePrinter : MonoBehaviour
 
     private float _elapsed = 0; // 文字を表示してからの経過時間
 
-    private int[] _alphaArray;
+    private int[] _alphaArray = new int[] { };
 
     // _message フィールドから表示する現在の文字インデックス。
     // 何も指していない場合は -1 とする。
@@ -51,7 +51,7 @@ public class MessagePrinter : MonoBehaviour
             }
         }
 
-        if (_alphaArray[_currentIndex] != 255) 
+        if (_alphaArray.Length > 0 && _alphaArray[_currentIndex] != 255) 
         {
             _textUi.text = "";
             for (int i = 0; i < _currentIndex + 1; i++)

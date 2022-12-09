@@ -3,77 +3,87 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class BackGround : MonoBehaviour
 {
-    [SerializeField, Tooltip("”wŒi‚Ì‘O‚É’u‚¢‚ÄƒtƒF[ƒh“™‚ğ‚·‚é’PF”wŒi")]
-    private Image _monochromatic;
-
-    [SerializeField, Tooltip("”wŒi1")]
-    private Image _BackGround1;
-
-    [SerializeField, Tooltip("”wŒi2")]
-    private Image _BackGround2;
-
-    [SerializeField, Tooltip("ƒtƒF[ƒh‚·‚éŠÔ")]
+    [SerializeField, Tooltip("ï¿½tï¿½Fï¿½[ï¿½hï¿½ï¿½ï¿½éï¿½ï¿½")]
     private float _fadeInterbal = 1.5f;
 
-    private Tweener _tweener;
+    [SerializeField, Tooltip("æš—è»¢ç”¨")]
+    BackGroundColor _black;
+
+    [SerializeField]
+    GameObject _backGroundCanbas;
+
+    [SerializeField]
+    public NovelInput _novelInput;
 
     private bool _backGroundChange = false;
 
     public bool BackGroundChange
     {
-        get
+        set
         {
-            return _backGroundChange;
+            if (_backGroundChange == true)
+            {
+                _backGroundChange = value;
+                _novelInput.MoveNext();
+            }
         }
     }
 
-    private void Start()
+    public void FadeIn(string imageName)
     {
-        MonochromaticFadeOut();
+        BackGroundColor backGround = BackGroundSearch(imageName);
+
+        backGround.FadeIn(_fadeInterbal);
     }
 
-    private void FadeIn(Image backGround)
+    public void FadeOut(string imageName)
     {
+        BackGroundColor backGround = BackGroundSearch(imageName);
+
+        backGround.FadeOut(_fadeInterbal);
+    }
+
+    public void FadeInComplete(string imageName)
+    {
+        BackGroundColor backGround = BackGroundSearch(imageName);
+
         _backGroundChange = true;
 
-        var c = backGround.color;
-        c = new Color(c.r, c.g, c.b, 255);
-
-        DOTween.To(() => backGround.color,
-            x => backGround.color = x,
-            c, _fadeInterbal).OnComplete(() => _backGroundChange = false);
+        backGround.FadeIn(_fadeInterbal);
     }
 
-    private void FadeOut(Image backGround)
+    public void FadeOutComplete(string imageName)
     {
+        BackGroundColor backGround = BackGroundSearch(imageName);
+
         _backGroundChange = true;
 
-        var c = backGround.color;
-        c = new Color(c.r, c.g, c.b, 0);
-
-        DOTween.To(() => backGround.color,
-            x => backGround.color = x,
-            c, _fadeInterbal).OnComplete(() => _backGroundChange = false);
+        backGround.FadeOut(_fadeInterbal);
     }
 
-    private void MonochromaticFadeOut()
+    private BackGroundColor BackGroundSearch(string imageName)
     {
-        if (!_backGroundChange)
-        {
-            FadeOut(_monochromatic);
-        }
-    }
+        if (imageName == "Black") { return _black; }
 
-    private void CrossFade()
-    {
-        if (!_backGroundChange)
+        BackGroundColor image = null;
+
+        Transform transform = _backGroundCanbas.transform.Find(imageName);
+
+        //å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚‰ç”»åƒã‚’å‡ºã™
+        if (transform != null)
         {
-            FadeOut(_BackGround1);
-            FadeIn(_BackGround2);
+            image = transform.GetComponent<BackGroundColor>();
         }
+        //Resourcesã‹ã‚‰ç”»åƒã‚’å‡ºã™
+        else
+        {
+            image = Instantiate(Resources.Load<BackGroundColor>($"NovelGame/{imageName}"), _backGroundCanbas.transform);
+            image.name = imageName;
+        }
+
+        return image;
     }
 }

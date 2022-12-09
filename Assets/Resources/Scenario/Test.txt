@@ -1,4 +1,6 @@
-@br$backGround$FadeOutCompleteBlack@br
+@br$backGround$FadeOutBlack@br
+$backGround$FadeInCompleteBackGround1@br
+$backGround$FadeOutCompleteBackGround1@br
 ああああああああ//うるせぇ@br
 いいいいいい@br
 うううううううう@br
