@@ -13,11 +13,6 @@ public class CharactorColor : MonoBehaviour
 
     public bool FadeComplate { get { return fadeComplate; } }
 
-    private void Update()
-    {
-        Debug.Log(_image.color);
-    }
-
     public void AlphaZero(float fadeInterbal)
     {
         if (_image == null) { _image = GetComponent<Image>(); }
@@ -37,8 +32,6 @@ public class CharactorColor : MonoBehaviour
 
         var c = _image.color;
         c = new Color(c.r, c.g, c.b, 1f);
-
-        Debug.Log(c); 
 
         fadeComplate = false;
 
