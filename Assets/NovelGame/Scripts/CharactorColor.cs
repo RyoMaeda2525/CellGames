@@ -1,6 +1,9 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,35 +11,48 @@ public class CharactorColor : MonoBehaviour
 {
     private Image _image = null;
 
-    [SerializeField]
-    private bool fadeComplate = false;
+    private NovelInput NovelInput => NovelManager.Instance.NovelInput;
 
-    public bool FadeComplate { get { return fadeComplate; } }
-
-    public void AlphaZero(float fadeInterbal)
+    public IEnumerator AlphaZero(float fadeInterbal , Func<bool> condition)
     {
         if (_image == null) { _image = GetComponent<Image>(); }
-        fadeComplate = false;
 
-        var c = _image.color;
-        c = new Color(c.r, c.g, c.b, 0);
+        var color = _image.color;
+        float a = color.a;
+        // color のアルファ値を徐々に 0 に近づける処理
+        var elapsed = 0F;
+        while (condition() && elapsed < fadeInterbal)
+        {
+            elapsed += Time.deltaTime;
+            color.a = a - elapsed / fadeInterbal;
+            _image.color = color;
+            yield return null;
+        }
 
-        DOTween.To(() => _image.color,
-            x => _image.color = x,
-            c, fadeInterbal).OnComplete(() => fadeComplate = true);
+        color.a = 0;
+        _image.color = color;
+        NovelInput.MoveNext();
+        yield return null;
     }
 
-    public void AlphaMax(float fadeInterbal)
+    public IEnumerator AlphaMax(float fadeInterbal, Func<bool> condition)
     {
         if (_image == null) { _image = GetComponent<Image>(); }
 
-        var c = _image.color;
-        c = new Color(c.r, c.g, c.b, 1f);
+        var color = _image.color;
+        // color のアルファ値を徐々に 1 に近づける処理
+        var elapsed = 0F;
+        while (condition() && elapsed < fadeInterbal)
+        {
+            elapsed += Time.deltaTime;
+            color.a = elapsed / fadeInterbal;
+            _image.color = color;
+            yield return null;
+        }
 
-        fadeComplate = false;
-
-        DOTween.To(() => _image.color,
-            x => _image.color = x,
-            c, fadeInterbal).OnComplete(() => fadeComplate = true);
+        color.a = 1;
+        _image.color = color;
+        NovelInput.MoveNext();
+        yield return null;
     }
 }

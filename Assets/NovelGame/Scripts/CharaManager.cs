@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using OpenCover.Framework.Model;
 
 public class CharaManager : MonoBehaviour
 {
@@ -10,46 +12,55 @@ public class CharaManager : MonoBehaviour
     private GameObject[] _charactorPosition;
 
     [SerializeField]
-    private string[] _charactorName;
-
-    [SerializeField]
     private GameObject _camvas = null;
 
-    private List<Image> _charactorImages = new List<Image>();
+    [SerializeField]
+    private List<CharactorColor> _charactorImages = new List<CharactorColor>();
 
     private void Awake()
     {
-        for (int i = 0; i < _charactorName.Length; i++)
+        for (int i = 0; i < _charactorImages.Count; i++)
         {
-            GameObject imagePrehub = Instantiate((GameObject)Resources.Load($"{_charactorName[i]}"), _camvas.transform);
-            imagePrehub.AddComponent<CharactorColor>();
-            _charactorImages.Add(imagePrehub.GetComponent<Image>());
-            _charactorImages[i].GetComponent<CharactorColor>().AlphaZero(0f);
-        }
+            CharactorColor imagePrehub = Instantiate(_charactorImages[i] , _camvas.transform);
 
+            _charactorImages[i] = imagePrehub;
+
+            StartCoroutine(imagePrehub.AlphaZero(0f , () => !IsSkipRequested()));
+        }
     }
 
     private void Start()
     {
-        CharactorFadeStand("Camepan", 0);
+        //CharactorFadeStand("Camepan", 0);
     }
 
     public void CharactorFadeStand(string charactorName, int positionIndex)
     {
-        Image fadeImage = null;
+        CharactorColor fadeImage = CharaSearch(charactorName);
+
+        if (fadeImage == null) { Debug.Log($"{charactorName}ÇÃâÊëúÇ™å©Ç¬Ç©ÇËÇ‹ÇπÇÒÅB"); return; }
+
+        StartCoroutine(fadeImage.AlphaMax(2f, () => !IsSkipRequested()));
+        fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
+    }
+
+    private CharactorColor CharaSearch(string charactorName) 
+    {
         charactorName = charactorName + "(Clone)";
 
         foreach (var image in _charactorImages)
         {
             if (image.name == charactorName)
             {
-                fadeImage = image;
-                break;
+                return image;
             }
         }
-        if (fadeImage == null) { Debug.Log("éwíËÇµÇΩâÊëúÇ™å©Ç¬Ç©ÇËÇ‹ÇπÇÒÅB"); return; }
 
-        fadeImage.GetComponent<CharactorColor>().AlphaMax(2f);
-        fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
+        return null;
+    }
+
+    private static bool IsSkipRequested()
+    {
+        return Input.GetMouseButtonDown(0);
     }
 }

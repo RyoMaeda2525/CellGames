@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class BackGround : MonoBehaviour
 {
     [SerializeField, Tooltip("�t�F�[�h���鎞��")]
     private float _fadeInterbal = 1.5f;
+
+    [SerializeField]
+    List<BackGroundColor> _backGroundImages = new List<BackGroundColor>();
 
     [SerializeField, Tooltip("暗転用")]
     BackGroundColor _black;
@@ -15,75 +19,75 @@ public class BackGround : MonoBehaviour
     [SerializeField]
     GameObject _backGroundCanbas;
 
-    [SerializeField]
-    public NovelInput _novelInput;
-
-    private bool _backGroundChange = false;
-
-    public bool BackGroundChange
+    private void Awake()
     {
-        set
+        for (int i = 0; i < _backGroundImages.Count; i++)
         {
-            if (_backGroundChange == true)
-            {
-                _backGroundChange = value;
-                _novelInput.MoveNext();
-            }
+            BackGroundColor imagePrehub = Instantiate(_backGroundImages[i], _backGroundCanbas.transform);
+
+            _backGroundImages[i] = imagePrehub;
+
+            imagePrehub.StartAlpha();
         }
+
+        StartCoroutine(_black.FadeOutNoNext(_fadeInterbal,() => !IsSkipRequested()));
     }
 
     public void FadeIn(string imageName)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
-        backGround.FadeIn(_fadeInterbal);
+        if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
+
+        backGround.FadeIn(_fadeInterbal, () => !IsSkipRequested());
     }
 
     public void FadeOut(string imageName)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
-        backGround.FadeOut(_fadeInterbal);
+        if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
+
+        StartCoroutine(backGround.FadeOut(_fadeInterbal, () => !IsSkipRequested()));
     }
 
     public void FadeInComplete(string imageName)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
-        _backGroundChange = true;
+        if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
 
-        backGround.FadeIn(_fadeInterbal);
+        StartCoroutine(backGround.FadeIn(_fadeInterbal, () => !IsSkipRequested()));
     }
 
     public void FadeOutComplete(string imageName)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
-        _backGroundChange = true;
+        if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
 
-        backGround.FadeOut(_fadeInterbal);
+        StartCoroutine(backGround.FadeOut(_fadeInterbal, () => !IsSkipRequested()));
     }
 
     private BackGroundColor BackGroundSearch(string imageName)
     {
         if (imageName == "Black") { return _black; }
 
-        BackGroundColor image = null;
+        imageName = imageName + "(Clone)";
 
-        Transform transform = _backGroundCanbas.transform.Find(imageName);
-
-        //子オブジェクトから画像を出す
-        if (transform != null)
+        foreach (var image in _backGroundImages)
         {
-            image = transform.GetComponent<BackGroundColor>();
-        }
-        //Resourcesから画像を出す
-        else
-        {
-            image = Instantiate(Resources.Load<BackGroundColor>($"NovelGame/{imageName}"), _backGroundCanbas.transform);
-            image.name = imageName;
+            if (image.name == imageName)
+            {
+                return image;
+            }
         }
 
-        return image;
+        return null;
+    }
+
+    private static bool IsSkipRequested()
+    {
+        return Input.GetMouseButtonDown(0);
     }
 }
