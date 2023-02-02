@@ -7,9 +7,6 @@ public class NovelInput : MonoBehaviour
     [SerializeField, Tooltip("テキストウィンドウにメッセージを表示するScript")]
     MessagePrinter _printer = default;
 
-    [SerializeField, Tooltip("背景を操作するScript")]
-    BackGround _bg = default;
-
     [SerializeField, Tooltip("メッセージ情報を持つTextファイル")]
     private string _loadFileName;
 
@@ -20,7 +17,14 @@ public class NovelInput : MonoBehaviour
 
     string[] commandWord = new string[] { "\\$image", "\\$backGround" };
 
-    string[] processWord = new string[] { "\\$FadeInComplete", "\\$FadeOutComplete" , "\\$FadeIn", "\\$FadeOut" };
+    string[] processWord = new string[] 
+    { "\\$FadeInComplete", "\\$FadeOutComplete" , "\\$FadeIn", "\\$FadeOut",
+      "\\$FadeStand0"
+    };
+
+    private CharaManager CharaManager => NovelManager.Instance.CharaManager;
+
+    private BackGround BackGround => NovelManager.Instance.BackGround;
 
     // Start is called before the first frame update
     void Awake()
@@ -96,30 +100,30 @@ public class NovelInput : MonoBehaviour
     {
         Group g = match.Groups[1];
 
+        Group p = match.Groups[2];
+
         //背景の切り替え
         if (g.Value == "$backGround")
         {
-            Group p = match.Groups[2];
-
             switch (p.Value)
             {
                 case "$FadeIn":
-                    _bg.FadeIn(match.Groups[3].Value);
+                    BackGround.FadeIn(match.Groups[3].Value);
                     Debug.Log($"backGroundFadeIn : {match.Groups[3].Value}");
                     break;
 
                 case "$FadeOut":
-                    _bg.FadeOut(match.Groups[3].Value);
+                    BackGround.FadeOut(match.Groups[3].Value);
                     Debug.Log($"backGroundFadeOut : {match.Groups[3].Value}");
                     break;
 
                 case "$FadeInComplete":
-                    _bg.FadeInComplete(match.Groups[3].Value);
+                    BackGround.FadeInComplete(match.Groups[3].Value);
                     Debug.Log($"backGroundFadeInComplete : {match.Groups[3].Value}");
                     return;
 
                 case "$FadeOutComplete":
-                    _bg.FadeOutComplete(match.Groups[3].Value);
+                    BackGround.FadeOutComplete(match.Groups[3].Value);
                     Debug.Log($"backGroundFadeOutComplete : {match.Groups[3].Value}");
                     return;
             }
@@ -127,9 +131,10 @@ public class NovelInput : MonoBehaviour
         //characterなどの切り替え
         else if (g.Value == "$image")
         {
-            switch (g.Value)
+            switch (p.Value)
             {
-                case "$image":
+                case "$FadeStand0":
+                    CharaManager.CharactorFadeStand(match.Groups[3].Value , 0);
                     Debug.Log($"Image : {match.Groups[3].Value}");
                     break;
             }

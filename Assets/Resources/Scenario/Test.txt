@@ -1,6 +1,5 @@
-@br$backGround$FadeOutBlack@br
-$backGround$FadeInCompleteBackGround1@br
-$backGround$FadeOutCompleteBackGround1@br
+@br$backGround$FadeInCompleteBackGround1@br
+$image$FadeStand0Camepan@br
 ああああああああ//うるせぇ@br
 いいいいいい@br
 うううううううう@br
