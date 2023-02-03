@@ -13,7 +13,34 @@ public class CharactorColor : MonoBehaviour
 
     private NovelInput NovelInput => NovelManager.Instance.NovelInput;
 
-    public IEnumerator AlphaZero(float fadeInterbal , Func<bool> condition)
+    private CharaManager _charaManager => NovelManager.Instance.CharaManager;
+
+    public IEnumerator FadeIn(float fadeInterbal, Func<bool> condition , bool end)
+    {
+        if (_image == null) { _image = GetComponent<Image>(); }
+
+        var color = _image.color;
+        // color のアルファ値を徐々に 1 に近づける処理
+        var elapsed = 0F;
+        while (condition() && elapsed < fadeInterbal)
+        {
+            elapsed += Time.deltaTime;
+            color.a = elapsed / fadeInterbal;
+            _image.color = color;
+            _charaManager._fadeNow = true;
+            yield return null;
+        }
+
+        color.a = 1;
+        _image.color = color;
+        if (end && condition())
+        {
+            NovelInput.MoveNext();
+        }
+        yield return null;
+    }
+
+    public IEnumerator FadeOut(float fadeInterbal, Func<bool> condition, bool end)
     {
         if (_image == null) { _image = GetComponent<Image>(); }
 
@@ -31,28 +58,60 @@ public class CharactorColor : MonoBehaviour
 
         color.a = 0;
         _image.color = color;
-        NovelInput.MoveNext();
+        if (end && condition())
+        {
+            NovelInput.MoveNext();
+        }
         yield return null;
     }
 
-    public IEnumerator AlphaMax(float fadeInterbal, Func<bool> condition)
+    public IEnumerator FadeIn(float fadeInterbal, bool end)
     {
         if (_image == null) { _image = GetComponent<Image>(); }
 
         var color = _image.color;
         // color のアルファ値を徐々に 1 に近づける処理
         var elapsed = 0F;
-        while (condition() && elapsed < fadeInterbal)
+        while (elapsed < fadeInterbal)
         {
             elapsed += Time.deltaTime;
             color.a = elapsed / fadeInterbal;
             _image.color = color;
+            _charaManager._fadeNow = true;
             yield return null;
         }
 
         color.a = 1;
         _image.color = color;
-        NovelInput.MoveNext();
+        if (end)
+        {
+            NovelInput.MoveNext();
+        }
+        yield return null;
+    }
+
+    public IEnumerator FadeOut(float fadeInterbal, bool end)
+    {
+        if (_image == null) { _image = GetComponent<Image>(); }
+
+        var color = _image.color;
+        float a = color.a;
+        // color のアルファ値を徐々に 0 に近づける処理
+        var elapsed = 0F;
+        while (elapsed < fadeInterbal)
+        {
+            elapsed += Time.deltaTime;
+            color.a = a - elapsed / fadeInterbal;
+            _image.color = color;
+            yield return null;
+        }
+
+        color.a = 0;
+        _image.color = color;
+        if (end)
+        {
+            NovelInput.MoveNext();
+        }
         yield return null;
     }
 }

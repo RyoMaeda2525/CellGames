@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 public class NovelInput : MonoBehaviour
 {
@@ -18,13 +19,19 @@ public class NovelInput : MonoBehaviour
     string[] commandWord = new string[] { "\\$image", "\\$backGround" };
 
     string[] processWord = new string[] 
-    { "\\$FadeInComplete", "\\$FadeOutComplete" , "\\$FadeIn", "\\$FadeOut",
-      "\\$FadeStand0"
+    {"\\$FadeIn", "\\$FadeOut","\\$DontSkipFadeIn", "\\$DontSkipFadeIn",
     };
 
-    private CharaManager CharaManager => NovelManager.Instance.CharaManager;
+    string[] characterPositions = new string[] { "\\$0" , "\\$1" , "\\$2" };
 
-    private BackGround BackGround => NovelManager.Instance.BackGround;
+    string[] endjudgment = new string[] { "\\$end" , "\\$continuity" };
+
+    private NovelManager NovelManager => NovelManager.Instance;
+
+    private CharaManager CharaManager => NovelManager.CharaManager;
+
+    private BackGround BackGround => NovelManager.BackGround;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -39,10 +46,14 @@ public class NovelInput : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (NovelManager.IsSkipRequested())
         {
             if (_printer.IsPrinting) { _printer.Skip(); }
-            else { MoveNext(); }
+            else if (CharaManager._fadeNow) { return; } 
+            else 
+            {
+                MoveNext(); 
+            }
         }
     }
 
@@ -82,8 +93,10 @@ public class NovelInput : MonoBehaviour
                 _scenarios[_currentLine] = _scenarios[_currentLine].Substring(0, indexof);
             }
 
-            Match command = Regex.Match(_scenarios[_currentLine], string.Format("({0})({1})(\\S+)", string.Join("|", commandWord)
-                                                                                                    , string.Join("|", processWord)));
+            Match command = Regex.Match(_scenarios[_currentLine], string.Format("({0})({1})({2})\\$([\\s\\S]+)({3})", string.Join("|", commandWord)
+                                                                                                    , string.Join("|", processWord)
+                                                                                                    , string.Join("|", characterPositions)
+                                                                                                    , string.Join("|", endjudgment)));
 
             if (command.Groups[0].Value != "")
             {
@@ -98,48 +111,56 @@ public class NovelInput : MonoBehaviour
 
     private void Command(Match match)
     {
-        Group g = match.Groups[1];
+        Group command = match.Groups[1];
 
-        Group p = match.Groups[2];
+        Group process = match.Groups[2];
+
+        int index = int.Parse(match.Groups[3].Value.Substring(1 , 1));
+
+        bool end = match.Groups[5].Value == "$end" ? true : false;
 
         //îwåiÇÃêÿÇËë÷Ç¶
-        if (g.Value == "$backGround")
+        if (command.Value == "$backGround")
         {
-            switch (p.Value)
+            switch (process.Value)
             {
                 case "$FadeIn":
-                    BackGround.FadeIn(match.Groups[3].Value);
-                    Debug.Log($"backGroundFadeIn : {match.Groups[3].Value}");
+                    BackGround.FadeIn(match.Groups[4].Value , end);
+                    Debug.Log($"backGroundFadeIn : {match.Groups[4].Value}");
                     break;
 
                 case "$FadeOut":
-                    BackGround.FadeOut(match.Groups[3].Value);
-                    Debug.Log($"backGroundFadeOut : {match.Groups[3].Value}");
+                    BackGround.FadeOut(match.Groups[4].Value , end);
+                    Debug.Log($"backGroundFadeOut : {match.Groups[4].Value}");
                     break;
 
-                case "$FadeInComplete":
-                    BackGround.FadeInComplete(match.Groups[3].Value);
-                    Debug.Log($"backGroundFadeInComplete : {match.Groups[3].Value}");
-                    return;
+                case "$DontSkipFadeIn":
+                    BackGround.DontSkipFadeIn(match.Groups[4].Value, end);
+                    Debug.Log($"backGroundDontSkipFadeIn : {match.Groups[4].Value}");
+                    break;
 
-                case "$FadeOutComplete":
-                    BackGround.FadeOutComplete(match.Groups[3].Value);
-                    Debug.Log($"backGroundFadeOutComplete : {match.Groups[3].Value}");
-                    return;
+                case "$DontSkipFadeOut":
+                    BackGround.DontSkipFadeOut(match.Groups[4].Value, end);
+                    Debug.Log($"backGroundDontSkipFadeOut : {match.Groups[4].Value}");
+                    break;
             }
         }
         //characterÇ»Ç«ÇÃêÿÇËë÷Ç¶
-        else if (g.Value == "$image")
+        else if (command.Value == "$image")
         {
-            switch (p.Value)
+            switch (process.Value)
             {
-                case "$FadeStand0":
-                    CharaManager.CharactorFadeStand(match.Groups[3].Value , 0);
-                    Debug.Log($"Image : {match.Groups[3].Value}");
+                case "$FadeIn":
+                    StartCoroutine(CharaManager.FadeIn(match.Groups[4].Value ,index , end));
+                    Debug.Log($"Image : {match.Groups[4].Value}");
                     break;
+
             }
         }
 
-        MoveNext(); //returnÇµÇ»ÇØÇÍÇŒéüÇÃçsÇ÷
+        if (!end) 
+        {
+            MoveNext(); //returnÇµÇ»ÇØÇÍÇŒéüÇÃçsÇ÷
+        }
     }
 }

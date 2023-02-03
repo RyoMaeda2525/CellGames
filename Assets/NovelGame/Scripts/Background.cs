@@ -19,6 +19,8 @@ public class BackGround : MonoBehaviour
     [SerializeField]
     GameObject _backGroundCanbas;
 
+    private NovelManager NovelManager => NovelManager.Instance;
+
     private void Awake()
     {
         for (int i = 0; i < _backGroundImages.Count; i++)
@@ -30,43 +32,43 @@ public class BackGround : MonoBehaviour
             imagePrehub.StartAlpha();
         }
 
-        StartCoroutine(_black.FadeOutNoNext(_fadeInterbal,() => !IsSkipRequested()));
+        StartCoroutine(_black.FadeOut(_fadeInterbal , false));
     }
 
-    public void FadeIn(string imageName)
+    public void FadeIn(string imageName , bool end)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
         if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
 
-        backGround.FadeIn(_fadeInterbal, () => !IsSkipRequested());
+        else StartCoroutine(backGround.FadeIn(_fadeInterbal, () => !NovelManager.IsSkipRequested(), end));
     }
 
-    public void FadeOut(string imageName)
+    public void FadeOut(string imageName , bool end)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
         if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
 
-        StartCoroutine(backGround.FadeOut(_fadeInterbal, () => !IsSkipRequested()));
+        StartCoroutine(backGround.FadeOut(_fadeInterbal, () => !NovelManager.IsSkipRequested(), end));
     }
 
-    public void FadeInComplete(string imageName)
+    public void DontSkipFadeOut(string imageName , bool end)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
         if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
 
-        StartCoroutine(backGround.FadeIn(_fadeInterbal, () => !IsSkipRequested()));
+        StartCoroutine(backGround.FadeOut(_fadeInterbal, end));
     }
 
-    public void FadeOutComplete(string imageName)
+    public void DontSkipFadeIn(string imageName, bool end)
     {
         BackGroundColor backGround = BackGroundSearch(imageName);
 
         if (backGround == null) { Debug.Log($"{imageName}の画像が見つかりません。"); return; }
 
-        StartCoroutine(backGround.FadeOut(_fadeInterbal, () => !IsSkipRequested()));
+        StartCoroutine(backGround.FadeIn(_fadeInterbal, end));
     }
 
     private BackGroundColor BackGroundSearch(string imageName)
@@ -84,10 +86,5 @@ public class BackGround : MonoBehaviour
         }
 
         return null;
-    }
-
-    private static bool IsSkipRequested()
-    {
-        return Input.GetMouseButtonDown(0);
     }
 }

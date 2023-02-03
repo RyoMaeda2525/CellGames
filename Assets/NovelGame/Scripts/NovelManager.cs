@@ -19,7 +19,12 @@ public class NovelManager : MonoBehaviour
     public CharaManager CharaManager => _charaManager;
 
     public BackGround BackGround => _backGround;
-    
+
+    public static bool IsSkipRequested()
+    {
+        return Input.GetMouseButtonDown(0);
+    }
+
     private void Awake()
     {
         CheckInstance();

@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using OpenCover.Framework.Model;
+using System.Numerics;
 
 public class CharaManager : MonoBehaviour
 {
@@ -17,6 +18,10 @@ public class CharaManager : MonoBehaviour
     [SerializeField]
     private List<CharactorColor> _charactorImages = new List<CharactorColor>();
 
+    private NovelManager NovelManager => NovelManager.Instance;
+
+    public bool _fadeNow = false;
+
     private void Awake()
     {
         for (int i = 0; i < _charactorImages.Count; i++)
@@ -25,22 +30,31 @@ public class CharaManager : MonoBehaviour
 
             _charactorImages[i] = imagePrehub;
 
-            StartCoroutine(imagePrehub.AlphaZero(0f , () => !IsSkipRequested()));
+            StartCoroutine(imagePrehub.FadeOut(0f , false));
         }
     }
 
-    private void Start()
+    public IEnumerator FadeIn(string charactorName, int positionIndex , bool end)
     {
-        //CharactorFadeStand("Camepan", 0);
+        CharactorColor fadeImage = CharaSearch(charactorName);
+
+        if (fadeImage == null) { Debug.Log($"{charactorName}‚Ì‰æ‘œ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB"); yield return null; }
+
+        Coroutine coroutine = StartCoroutine(fadeImage.FadeIn(2f, () => !NovelManager.IsSkipRequested() , end));
+        fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
+
+        yield return coroutine;
+
+        _fadeNow = false;
     }
 
-    public void CharactorFadeStand(string charactorName, int positionIndex)
+    public void DontSkipFadeIn(string charactorName, int positionIndex, bool end)
     {
         CharactorColor fadeImage = CharaSearch(charactorName);
 
         if (fadeImage == null) { Debug.Log($"{charactorName}‚Ì‰æ‘œ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB"); return; }
 
-        StartCoroutine(fadeImage.AlphaMax(2f, () => !IsSkipRequested()));
+        StartCoroutine(fadeImage.FadeIn(2f , end));
         fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
     }
 
@@ -57,10 +71,5 @@ public class CharaManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    private static bool IsSkipRequested()
-    {
-        return Input.GetMouseButtonDown(0);
     }
 }
