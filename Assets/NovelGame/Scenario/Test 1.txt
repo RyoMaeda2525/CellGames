@@ -1,0 +1,4 @@
+@br$backGround$DontSkipFadeIn$0$BackGround1$continuity@br
+$image$FadeIn$0$Camepan$end@br
+やあ僕はカメパン！@br
+よろしくね！@br

@@ -181,7 +181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <alpha=#11>New Text
+  m_text: <alpha=#01>New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7aff2f881b05d5c45971e1ba971f4478, type: 2}
   m_sharedMaterial: {fileID: 4101867503125621024, guid: 7aff2f881b05d5c45971e1ba971f4478, type: 2}
@@ -337,7 +337,6 @@ GameObject:
   - component: {fileID: 836119721}
   - component: {fileID: 836119720}
   - component: {fileID: 836119719}
-  - component: {fileID: 836119718}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -345,18 +344,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &836119718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 836119717}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e3b45b50d4769a41bd906551804b8b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &836119719
 MonoBehaviour:
   m_ObjectHideFlags: 0

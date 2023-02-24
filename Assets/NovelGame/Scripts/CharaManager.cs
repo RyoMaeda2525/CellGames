@@ -18,6 +18,9 @@ public class CharaManager : MonoBehaviour
     [SerializeField]
     private List<CharactorColor> _charactorImages = new List<CharactorColor>();
 
+    [SerializeField]
+    private float _fadeTime = 2f;
+
     private NovelManager NovelManager => NovelManager.Instance;
 
     public bool _fadeNow = false;
@@ -40,7 +43,21 @@ public class CharaManager : MonoBehaviour
 
         if (fadeImage == null) { Debug.Log($"{charactorName}の画像が見つかりません。"); yield return null; }
 
-        Coroutine coroutine = StartCoroutine(fadeImage.FadeIn(2f, () => !NovelManager.IsSkipRequested() , end));
+        Coroutine coroutine = StartCoroutine(fadeImage.FadeIn(_fadeTime, () => !NovelManager.IsSkipRequested() , end));
+        fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
+
+        yield return coroutine;
+
+        _fadeNow = false;
+    }
+
+    public IEnumerator FadeOut(string charactorName, int positionIndex, bool end)
+    {
+        CharactorColor fadeImage = CharaSearch(charactorName);
+
+        if (fadeImage == null) { Debug.Log($"{charactorName}の画像が見つかりません。"); yield return null; }
+
+        Coroutine coroutine = StartCoroutine(fadeImage.FadeOut(_fadeTime, () => !NovelManager.IsSkipRequested(), end));
         fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
 
         yield return coroutine;
@@ -54,7 +71,17 @@ public class CharaManager : MonoBehaviour
 
         if (fadeImage == null) { Debug.Log($"{charactorName}の画像が見つかりません。"); return; }
 
-        StartCoroutine(fadeImage.FadeIn(2f , end));
+        StartCoroutine(fadeImage.FadeIn(_fadeTime , end));
+        fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
+    }
+
+    public void DontSkipFadeOut(string charactorName, int positionIndex, bool end)
+    {
+        CharactorColor fadeImage = CharaSearch(charactorName);
+
+        if (fadeImage == null) { Debug.Log($"{charactorName}の画像が見つかりません。"); return; }
+
+        StartCoroutine(fadeImage.FadeOut(_fadeTime, end));
         fadeImage.transform.position = _charactorPosition[positionIndex].transform.position;
     }
 

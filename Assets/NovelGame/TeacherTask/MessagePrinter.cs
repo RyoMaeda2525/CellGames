@@ -61,13 +61,13 @@ public class MessagePrinter : MonoBehaviour
                     if (_alphaArray[_currentIndex] < 10) { _alphaArray[_currentIndex] = 10; }
 
                     _alphaArray[i] += 5;
-                    _textUi.text += $"<alpha=#" +_alphaArray[i].ToString("x2")+">"+_message[_currentIndex];
+                    _textUi.text += $"<alpha=#" +_alphaArray[i].ToString("x2")+">"+_message[i];
 
                 }
                 else
                 {
                     _alphaArray[i] = 255;
-                    _textUi.text += $"<alpha=#ff>"+_message[_currentIndex];
+                    _textUi.text += $"<alpha=#ff>"+_message[i];
                 }
             }
         }

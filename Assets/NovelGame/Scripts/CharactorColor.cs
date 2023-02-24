@@ -33,6 +33,7 @@ public class CharactorColor : MonoBehaviour
 
         color.a = 1;
         _image.color = color;
+        //Ÿ‚Ìˆ—‚ğŠJn
         if (end && condition())
         {
             NovelInput.MoveNext();
