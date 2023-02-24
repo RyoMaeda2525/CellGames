@@ -12,6 +12,8 @@ public class Cursor : SingletonMonoBehaviour<Cursor>
     [SerializeField, Tooltip("cellÇ∆à íuçáÇÌÇπÇÈÇΩÇﬂÇÃZíl")]
     float _z = 10f;
 
+    public bool _animationStop = false;
+
     public int _nowX = 0;
 
     public int _nowZ = 0;
@@ -20,8 +22,6 @@ public class Cursor : SingletonMonoBehaviour<Cursor>
     {
         if (z > 7 || z < 0 || x > 7 || x < 0)
         {
-            Debug.Log("CellArrayOver");
-
             return false;
         }
         transform.position = new Vector3(_firstx + x * _x, transform.position.y, z * _z);
@@ -31,23 +31,32 @@ public class Cursor : SingletonMonoBehaviour<Cursor>
 
     private void Update()
     {
-        if (Input.GetButtonDown("Jump"))
+        if (!_animationStop)
         {
-            Reversi.Instance.Arrangement(_nowX , _nowZ);
-        }
-        else
-        {
-            var z =
-           (Input.GetKeyDown(KeyCode.LeftArrow) ? -1 : 0) +
-           (Input.GetKeyDown(KeyCode.RightArrow) ? 1 : 0);
 
-            var x =
-            (Input.GetKeyDown(KeyCode.UpArrow) ? -1 : 0) +
-            (Input.GetKeyDown(KeyCode.DownArrow) ? 1 : 0);
-
-            if (z != 0 || x != 0)
+            if (Input.GetButtonDown("Jump"))
             {
-                bool changeSuccess = PotisionChange(_nowX + x, _nowZ + z);
+                if (Reversi.Instance._cells[_nowX, _nowZ].ReversiState != ReversiState.None||
+                    Reversi.Instance._cells[_nowX, _nowZ].ReversiCellState == ReversiCellState.None) 
+                {
+                    Debug.Log("Error"); return;
+                }
+                else Reversi.Instance.Arrangement(_nowX, _nowZ);
+            }
+            else
+            {
+                var z =
+               (Input.GetKeyDown(KeyCode.LeftArrow) ? -1 : 0) +
+               (Input.GetKeyDown(KeyCode.RightArrow) ? 1 : 0);
+
+                var x =
+                (Input.GetKeyDown(KeyCode.UpArrow) ? -1 : 0) +
+                (Input.GetKeyDown(KeyCode.DownArrow) ? 1 : 0);
+
+                if (z != 0 || x != 0)
+                {
+                    bool changeSuccess = PotisionChange(_nowX + x, _nowZ + z);
+                }
             }
         }
     }
